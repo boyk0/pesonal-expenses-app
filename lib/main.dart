@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.purple,
       ),
       home: MyHomePage(),
     );
@@ -27,6 +27,12 @@ class MyHomePage extends StatelessWidget {
     Transaction(id: 't1', title: 'q', amount: 10, date: DateTime.now()),
     Transaction(id: 't2', title: 'w', amount: 11.1, date: DateTime.now()),
   ];
+
+  final titleController = TextEditingController();
+  final amountController = TextEditingController();
+
+  // String? titleInput;
+  // String? amountInput;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +49,7 @@ class MyHomePage extends StatelessWidget {
             child: Card(
               color: Colors.blue,
               elevation: 5,
-              child: Container(),
+              child: Text('qwe'),
             ),
           ),
           Card(
@@ -51,9 +57,40 @@ class MyHomePage extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.all(10),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  TextField(),
-                  TextField(),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Title',
+                    ),
+                    controller: titleController,
+                    // onChanged: (value) {
+                    //   titleInput = value;
+                    // },
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Amount',
+                    ),
+                    controller: amountController,
+                    // onChanged: (value) {
+                    //   amountInput = value;
+                    // },
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      print(titleController.text);
+                      print(amountController.text);
+                      // print('titleInput: ${titleInput}');
+                      // print('amountInput: ${amountInput}');
+                    },
+                    child: Text(
+                      'Add transaction',
+                      style: TextStyle(
+                        color: Colors.purple,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
