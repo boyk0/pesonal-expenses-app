@@ -1,7 +1,9 @@
+import 'package:expenses/widgets/transaction_list.dart';
 import 'package:flutter/material.dart';
 
 import './models/transaction.dart';
-import './widgets/user_transaction.dart';
+import './widgets/new_transaction.dart';
+import './widgets/transaction_list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,15 +24,41 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  final List<Transaction> transactions = [
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final List<Transaction> _userTransactions = [
+    Transaction(id: 't1', title: 'q', amount: 10, date: DateTime.now()),
+    Transaction(id: 't2', title: 'w', amount: 11.1, date: DateTime.now()),
   ];
 
-  final titleController = TextEditingController();
-  final amountController = TextEditingController();
+  void _addTransaction(String title, double amount) {
+    final newTransaction = Transaction(
+      id: DateTime.now().toString(),
+      title: title,
+      amount: amount,
+      date: DateTime.now(),
+    );
 
-  // String? titleInput;
-  // String? amountInput;
+    setState(() {
+      _userTransactions.add(newTransaction);
+    });
+  }
+
+  void _startAddNewTransaction(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return GestureDetector(
+            onTap: () {},
+            behavior: HitTestBehavior.opaque,
+            child: NewTransaction(_addTransaction));
+        },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +67,7 @@ class MyHomePage extends StatelessWidget {
         title: Text('App'),
         actions: <Widget>[
           IconButton(
-            onPressed: () {  },
+            onPressed: () => _startAddNewTransaction(context),
             icon: Icon(Icons.add),
           ),
         ],
@@ -57,13 +85,13 @@ class MyHomePage extends StatelessWidget {
                 child: Text('CHART'),
               ),
             ),
-            UserTransactions()
+            TransactionList(_userTransactions)
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => _startAddNewTransaction(context),
         child: Icon(Icons.add),
       ),
     );
