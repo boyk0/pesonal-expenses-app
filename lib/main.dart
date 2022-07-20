@@ -1,5 +1,6 @@
 import 'package:expenses/widgets/transaction_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import './models/transaction.dart';
 import './widgets/new_transaction.dart';
@@ -7,6 +8,8 @@ import './widgets/transaction_list.dart';
 import './widgets/chart.dart';
 
 void main() {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(MyApp());
 }
 
@@ -54,6 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Transaction(id: 't1', title: 'q', amount: 10, date: DateTime.now()),
     // Transaction(id: 't2', title: 'w', amount: 11.1, date: DateTime.now()),
   ];
+  bool _showChart = false;
 
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((transaction) {
@@ -116,11 +120,21 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Container(
-              height: (MediaQuery.of(context).size.height - appBar.preferredSize.height - MediaQuery.of(context).padding.top) * 0.3,
-              child: Chart(_recentTransactions),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Show chart'),
+                Switch(value: _showChart, onChanged: ( value) {
+                  setState(() {
+                    _showChart = value;
+                  });
+                },),
+              ],
             ),
-            Container(
+            _showChart ? Container(
+              height: (MediaQuery.of(context).size.height - appBar.preferredSize.height - MediaQuery.of(context).padding.top) * 0.7,
+              child: Chart(_recentTransactions),
+            ) : Container(
               height: (MediaQuery.of(context).size.height - appBar.preferredSize.height - MediaQuery.of(context).padding.top) * 0.7,
               child: TransactionList(_userTransactions, _deleteTransaction),
             )
