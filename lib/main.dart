@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:expenses/widgets/transaction_list.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 
 import './models/transaction.dart';
 import './widgets/new_transaction.dart';
@@ -98,9 +101,28 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final mediaQuery = MediaQuery.of(context);
 
-    final appBar = AppBar(
+    final bool isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    final dynamic appBar = Platform.isIOS ? CupertinoNavigationBar(
+      middle: Text(
+        'App',
+        style: TextStyle(
+          fontFamily: 'OpenSans',
+          color: Colors.black,
+        ),
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () => _startAddNewTransaction(context),
+            child: Icon(CupertinoIcons.add),
+          ),
+        ],
+      ),
+    ) : AppBar(
       title: Text(
         'App',
         style: TextStyle(
@@ -116,48 +138,55 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     final transactionsListWidget = Container(
-      height: (MediaQuery.of(context).size.height - appBar.preferredSize.height - MediaQuery.of(context).padding.top) * 0.7,
+      height: (mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top) * 0.7,
       child: TransactionList(_userTransactions, _deleteTransaction),
     );
 
-    final chartWidget = Container(
-      height: (MediaQuery.of(context).size.height - appBar.preferredSize.height - MediaQuery.of(context).padding.top) * 0.7,
-      child: Chart(_recentTransactions),
-    );
-
-    return Scaffold(
-      appBar: appBar,
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            if (isLandscape) Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Show chart'),
-                Switch(value: _showChart, onChanged: ( value) {
+    final pageBody = SafeArea(child: SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          if (isLandscape) Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Show chart',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Switch.adaptive(
+                activeColor: Theme.of(context).accentColor,
+                value: _showChart,
+                onChanged: ( value) {
                   setState(() {
                     _showChart = value;
                   });
-                },),
-              ],
-            ),
-            if (!isLandscape) Container(
-              height: (MediaQuery.of(context).size.height - appBar.preferredSize.height - MediaQuery.of(context).padding.top) * 0.3,
-              child: Chart(_recentTransactions),
-            ),
-            if (!isLandscape) transactionsListWidget,
+                },
+              ),
+            ],
+          ),
+          if (!isLandscape) Container(
+            height: (mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top) * 0.3,
+            child: Chart(_recentTransactions),
+          ),
+          if (!isLandscape) transactionsListWidget,
 
-            if (isLandscape) _showChart ? Container(
-              height: (MediaQuery.of(context).size.height - appBar.preferredSize.height - MediaQuery.of(context).padding.top) * 0.7,
-              child: Chart(_recentTransactions),
-            ) : transactionsListWidget
-          ],
-        ),
+          if (isLandscape) _showChart ? Container(
+            height: (mediaQuery.size.height - appBar.preferredSize.height - mediaQuery.padding.top) * 0.7,
+            child: Chart(_recentTransactions),
+          ) : transactionsListWidget
+        ],
       ),
+    ),);
+
+    return Platform.isIOS ? CupertinoPageScaffold(
+      child: pageBody,
+      navigationBar: appBar,
+    ) : Scaffold(
+      appBar: appBar,
+      body: pageBody,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: Platform.isIOS ? Container() : FloatingActionButton(
         onPressed: () => _startAddNewTransaction(context),
         child: Icon(Icons.add),
       ),

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -69,7 +72,7 @@ class TransactionList extends StatelessWidget {
                 child: FittedBox(
                   child: Row(
                     children: [
-                      Icon(Icons.delete),
+                      Platform.isIOS ? Icon(CupertinoIcons.delete) : Icon(Icons.delete),
                       Text('Delete '),
                     ],
                   ),
@@ -77,7 +80,7 @@ class TransactionList extends StatelessWidget {
               ) : IconButton(
                 onPressed: () => deleteTransaction(transactions[i].id),
                 color: Theme.of(context).errorColor,
-                icon: Icon(Icons.delete),
+                icon: Platform.isIOS ? Icon(CupertinoIcons.delete) : Icon(Icons.delete),
               ),
             ),
           );
