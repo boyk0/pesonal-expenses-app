@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -14,26 +17,28 @@ class TransactionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Container(
-      height: 300,
-      child: transactions.isEmpty ? Column(
-        children: [
-          Text(
-            'No transactions added yet!!!',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Container(
-            height: 200,
-            child: Image.asset(
-              'assets/images/waiting.png',
-              fit: BoxFit.cover,
+    return  transactions.isEmpty ? LayoutBuilder(
+      builder: (ctx, constraints) {
+        return Column(
+          children: [
+            Text(
+              'No transactions added yet!!!',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
-          ),
-        ],
-      ) : ListView.builder(
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              height: constraints.maxHeight * 0.6,
+              child: Image.asset(
+                'assets/images/waiting.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ],
+        );
+      },
+    ) : ListView.builder(
         itemBuilder: (ctx, i) {
           return Card(
             elevation: 5,
@@ -59,16 +64,28 @@ class TransactionList extends StatelessWidget {
                 DateFormat.yMMMd().format(transactions[i].date,
               ),
             ),
-              trailing: IconButton(
+              trailing: MediaQuery.of(context).size.width > 400 ? TextButton(
+                onPressed: () => deleteTransaction(transactions[i].id),
+                style: TextButton.styleFrom(
+                  primary: Theme.of(context).errorColor,
+                ),
+                child: FittedBox(
+                  child: Row(
+                    children: [
+                      Platform.isIOS ? Icon(CupertinoIcons.delete) : Icon(Icons.delete),
+                      Text('Delete '),
+                    ],
+                  ),
+                ),
+              ) : IconButton(
                 onPressed: () => deleteTransaction(transactions[i].id),
                 color: Theme.of(context).errorColor,
-                icon: Icon(Icons.delete),
+                icon: Platform.isIOS ? Icon(CupertinoIcons.delete) : Icon(Icons.delete),
               ),
             ),
           );
         },
         itemCount: transactions.length,
-      ),
     );
   }
   
