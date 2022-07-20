@@ -98,6 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+
     final appBar = AppBar(
       title: Text(
         'App',
@@ -113,6 +115,16 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
     );
 
+    final transactionsListWidget = Container(
+      height: (MediaQuery.of(context).size.height - appBar.preferredSize.height - MediaQuery.of(context).padding.top) * 0.7,
+      child: TransactionList(_userTransactions, _deleteTransaction),
+    );
+
+    final chartWidget = Container(
+      height: (MediaQuery.of(context).size.height - appBar.preferredSize.height - MediaQuery.of(context).padding.top) * 0.7,
+      child: Chart(_recentTransactions),
+    );
+
     return Scaffold(
       appBar: appBar,
       body: SingleChildScrollView(
@@ -120,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Row(
+            if (isLandscape) Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Show chart'),
@@ -131,13 +143,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 },),
               ],
             ),
-            _showChart ? Container(
+            if (!isLandscape) Container(
+              height: (MediaQuery.of(context).size.height - appBar.preferredSize.height - MediaQuery.of(context).padding.top) * 0.3,
+              child: Chart(_recentTransactions),
+            ),
+            if (!isLandscape) transactionsListWidget,
+
+            if (isLandscape) _showChart ? Container(
               height: (MediaQuery.of(context).size.height - appBar.preferredSize.height - MediaQuery.of(context).padding.top) * 0.7,
               child: Chart(_recentTransactions),
-            ) : Container(
-              height: (MediaQuery.of(context).size.height - appBar.preferredSize.height - MediaQuery.of(context).padding.top) * 0.7,
-              child: TransactionList(_userTransactions, _deleteTransaction),
-            )
+            ) : transactionsListWidget
           ],
         ),
       ),
